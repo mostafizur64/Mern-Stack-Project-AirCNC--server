@@ -52,6 +52,20 @@ async function run() {
       const result = await roomsCollection.insertOne(room);
       res.send(result);
     });
+    // update room booking status
+    app.patch("/rooms/status/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          booked: status,
+        },
+      };
+      const update = await roomsCollection.updateOne(query, updateDoc);
+      res.send(update);
+    });
+
     // get all room data from db
     app.get("/rooms", async (req, res) => {
       const result = await roomsCollection.find().toArray();
@@ -65,6 +79,22 @@ async function run() {
       const result = await roomsCollection.findOne(query);
       res.send(result);
     });
+
+    // get single user
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+    //  room booking api
+    app.post("/bookings", async (req, res) => {
+      const bookings = req.body;
+      const result = await bookingsCollection.insertOne(bookings);
+      res.send(result);
+    });
+    app.post();
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
